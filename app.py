@@ -3,7 +3,6 @@ from flask_scss import Scss
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import os
-from dotenv import load_dotenv
 import io
 import csv
 
