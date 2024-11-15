@@ -10,7 +10,7 @@ import csv
 app = Flask(__name__)
 
 # Set the secret key for session management and security
-app.secret_key = os.getenv("SECRET_KEY")
+app.secret_key = "sdfjhuherwutgobkdjfgdsdf4"
 
 # Enable SCSS for styling
 Scss(app)
