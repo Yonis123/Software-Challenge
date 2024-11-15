@@ -7,34 +7,42 @@ from dotenv import load_dotenv
 import io
 import csv
 
+# Initialize the Flask application
 app = Flask(__name__)
+
+# Set the secret key for session management and security
 app.secret_key = os.getenv("SECRET_KEY")
+
+# Enable SCSS for styling
 Scss(app)
 
+# Configure the SQLite database and disable modification tracking to reduce overhead
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATION"] = False
 db = SQLAlchemy(app)
 
+# Define the Inventory model representing a book in the database
 class Inventory(db.Model):
     __tablename__ = 'inventory'
 
-    entry_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    title = db.Column(db.String(255), nullable=False)
-    author = db.Column(db.String(255), nullable=False)
-    genre = db.Column(db.String(100), nullable=True)
-    publication_date = db.Column(db.Date, nullable=True)
-    isbn = db.Column(db.String(13), unique=True, nullable=False)
+    entry_id = db.Column(db.Integer, primary_key=True, autoincrement=True)  # Unique ID for each book
+    title = db.Column(db.String(255), nullable=False)  # Book title
+    author = db.Column(db.String(255), nullable=False)  # Book author
+    genre = db.Column(db.String(100), nullable=True)  # Book genre
+    publication_date = db.Column(db.Date, nullable=True)  # Date of publication
+    isbn = db.Column(db.String(13), unique=True, nullable=False)  # ISBN, must be unique
 
     def __repr__(self):
-        return f"Task{self.entry_id}"
+        return f"Task{self.entry_id}"  # Represents each book entry with its ID for easy debugging
 
+# Create database tables within the app context
 with app.app_context():
         db.create_all()
 
-# home page
+# Home page route for displaying and managing the book inventory
 @app.route("/", methods=["POST", "GET"])
 def index():
-    # Add book logic remains the same...
+    # Handle book addition when a POST request is made
     if request.method == "POST":
         title = request.form.get("title")
         author = request.form.get("author")
@@ -42,7 +50,7 @@ def index():
         publication_date = request.form.get("publication_date")
         isbn = request.form.get("isbn")
 
-        # Validate and process the publication date
+        # Process and validate the publication date format
         if publication_date:
             try:
                 publication_date = datetime.strptime(publication_date, "%Y-%m-%d").date()
@@ -50,7 +58,7 @@ def index():
                 flash("Invalid date format. Please use YYYY-MM-DD.")
                 return redirect("/")
 
-        # Create a new Inventory record
+        # Create a new Inventory record to add to the database
         new_book = Inventory(
             title=title,
             author=author,
@@ -59,26 +67,26 @@ def index():
             isbn=isbn
         )
 
-        # Add to the database and commit
+        # Attempt to save the new book to the database and handle errors
         try:
             db.session.add(new_book)
             db.session.commit()
             flash("Book successfully added!")
         except Exception as e:
-            flash(f"Error adding book: {str(e)}")
+            flash(f"Error adding book: {str(e)}")  # Display error message if something goes wrong
         return redirect("/")
 
-    # Initialize an empty list for books
+    # Initialize an empty list for books and a flag to indicate if a filter was applied
     books = []
     filter_applied = False
 
-    # Filtering logic for GET requests
+    # Gather filter criteria from the GET request parameters
     title = request.args.get("title")
     author = request.args.get("author")
     genre = request.args.get("genre")
     publication_date = request.args.get("publication_date")
 
-    # Apply filters only if they are provided
+    # Only apply filters if at least one filter criterion is provided
     if title or author or genre or publication_date:
         books_query = Inventory.query
         if title:
@@ -94,17 +102,18 @@ def index():
             except ValueError:
                 flash("Invalid date format for filtering. Please use YYYY-MM-DD.")
 
+        # Get all filtered books and set filter_applied to True
         books = books_query.all()
         filter_applied = True
 
-    # Render the template with books and filter state
+    # Render the index template with the books and filter state
     return render_template("index.html", books=books, filter_applied=filter_applied,
                            title=title, author=author, genre=genre, publication_date=publication_date)
 
-
+# Route to handle exporting books in CSV or JSON format
 @app.route("/export", methods=["GET"])
 def export_books():
-    # Use the same filtering logic from the index route
+    # Gather filter criteria from the request for exporting specific data
     title = request.args.get("title")
     author = request.args.get("author")
     genre = request.args.get("genre")
@@ -113,7 +122,7 @@ def export_books():
 
     books_query = Inventory.query
 
-    # Apply filters if present
+    # Apply the same filters as in the index route
     if title:
         books_query = books_query.filter(Inventory.title.ilike(f"%{title}%"))
     if author:
@@ -129,25 +138,28 @@ def export_books():
 
     books = books_query.all()
 
-    # Export as CSV
+    # Handle CSV export
     if export_format == "csv":
         output = io.StringIO()
         writer = csv.writer(output)
 
-        # Write headers
+        # Write the CSV headers
         writer.writerow(["Entry ID", "Title", "Author", "Genre", "Publication Date", "ISBN"])
+        
+        # Write book data to CSV
         for book in books:
             writer.writerow([book.entry_id, book.title, book.author, book.genre, 
                              book.publication_date, book.isbn])
 
-        output.seek(0)
+        output.seek(0)  # Reset pointer to the beginning of the file for reading
         return send_file(io.BytesIO(output.getvalue().encode("utf-8")),
                          mimetype="text/csv",
                          as_attachment=True,
                          download_name="filtered_books.csv")
 
-    # Export as JSON
+    # Handle JSON export
     elif export_format == "json":
+        # Create a list of dictionaries representing each book
         books_list = [{
             "entry_id": book.entry_id,
             "title": book.title,
@@ -157,6 +169,7 @@ def export_books():
             "isbn": book.isbn
         } for book in books]
 
+        # Convert to JSON format
         output = io.StringIO()
         output.write(json.dumps(books_list, indent=4))  
         output.seek(0)
@@ -166,10 +179,10 @@ def export_books():
                          as_attachment=True,
                          download_name="filtered_books.json")
 
-    # If unsupported format is provided
+    # Return an error if an unsupported format is requested
     return "Unsupported format. Use 'csv' or 'json'.", 400
 
 
 if __name__ == "__main__":
-    
+    # Run the application in debug mode for development purposes
     app.run(debug=True)
