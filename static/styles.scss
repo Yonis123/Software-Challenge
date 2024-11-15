@@ -1,0 +1,208 @@
+// Variables for consistent styling
+$primary-color: #2b6cb0; // Deep blue
+$secondary-color: #edf2f7; // Soft light gray
+$accent-color: #38a169; // Green for accents
+$text-color: #2d3748; // Charcoal gray
+$border-color: #e2e8f0; // Light border color
+$hover-color: darken($primary-color, 10%);
+$font-family: 'Inter', sans-serif;
+$transition-time: 0.3s;
+
+// Global Reset
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+// Body Styling
+body {
+  font-family: $font-family;
+  background-color: $secondary-color;
+  color: $text-color;
+  line-height: 1.5;
+  padding: 10px 20px;
+  overflow-x: hidden;
+}
+
+// Container
+.container {
+  max-width: 900px; // Reduced maximum width
+  margin: 0 auto;
+  padding: 20px;
+}
+
+// Header Styling
+header {
+  background: $primary-color;
+  color: white;
+  padding: 20px; // Reduced padding
+  text-align: center;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+
+  h1 {
+    font-size: 2rem; // Reduced font size
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  p {
+    font-size: 1rem; // Reduced font size
+    opacity: 0.9;
+  }
+}
+
+// Main Content
+main {
+  margin-top: 15px;
+
+  .section {
+    background: #fff;
+    border-radius: 10px;
+    padding: 15px; // Reduced padding
+    margin-bottom: 15px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+
+    h2 {
+      font-size: 1.25rem; // Reduced font size
+      margin-bottom: 8px;
+      color: $primary-color;
+    }
+
+    p {
+      font-size: 0.9rem; // Reduced font size
+      color: $text-color;
+    }
+  }
+}
+
+// Form Styling
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; // Reduced spacing between elements
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+    label {
+      font-weight: 600;
+      font-size: 0.9rem; // Reduced font size
+    }
+
+    input,
+    select,
+    textarea {
+      padding: 10px; // Reduced padding
+      font-size: 0.9rem; // Reduced font size
+      border: 1px solid $border-color;
+      border-radius: 8px;
+      background-color: #fff;
+      transition: border-color $transition-time, box-shadow $transition-time;
+
+      &:focus {
+        border-color: $accent-color;
+        box-shadow: 0 0 0 2px rgba($accent-color, 0.2);
+        outline: none;
+      }
+    }
+  }
+
+  button {
+    background: $primary-color;
+    color: white;
+    border: none;
+    padding: 10px 16px; // Reduced padding
+    font-size: 0.9rem; // Reduced font size
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color $transition-time, transform $transition-time;
+
+    &:hover {
+      background: $hover-color;
+      transform: translateY(-2px); // Subtle lift on hover
+    }
+  }
+}
+
+// Table Styling
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+
+  th,
+  td {
+    text-align: left;
+    padding: 10px; // Reduced padding
+    font-size: 0.85rem; // Reduced font size
+  }
+
+  th {
+    background-color: $primary-color;
+    color: white;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+  }
+
+  td {
+    background: $secondary-color;
+    border-bottom: 1px solid $border-color;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  tr:hover {
+    background: lighten($primary-color, 45%);
+    color: $text-color;
+  }
+}
+
+// Footer Styling
+footer {
+  text-align: center;
+  font-size: 0.85rem; // Reduced font size
+  margin-top: 15px;
+  color: lighten($text-color, 20%);
+  padding: 15px 0; // Reduced padding
+}
+
+// Buttons and Links
+a,
+button {
+  transition: all $transition-time;
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  header h1 {
+    font-size: 1.5rem; // Further reduce font size for small screens
+  }
+
+  .section {
+    padding: 10px; // Reduced padding
+  }
+
+  form {
+    gap: 8px; // Adjust gap for smaller screens
+
+    input,
+    select,
+    textarea {
+      font-size: 0.8rem; // Reduced font size
+    }
+
+    button {
+      padding: 8px 12px; // Reduced padding for buttons
+    }
+  }
+}

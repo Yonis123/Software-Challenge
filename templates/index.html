@@ -1,0 +1,123 @@
+{%  extends 'base.html' %}
+
+{% block head %}{% endblock %}
+
+{% block body %}
+<div class="container">
+    <header>
+        <h1>Book Inventory Management System</h1>
+        <p>Effortlessly manage, filter, and export your book inventory.</p>
+    </header>
+
+    <main>
+        <!-- Add Book Form -->
+        <section id="add-book" class="card">
+            <h2>Add New Book</h2>
+            <form action="" method="POST">
+                <div class="form-group">
+                    <label for="title">Title:</label>
+                    <input type="text" id="title" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="author">Author:</label>
+                    <input type="text" id="author" name="author" required>
+                </div>
+                <div class="form-group">
+                    <label for="genre">Genre:</label>
+                    <input type="text" id="genre" name="genre" required>
+                </div>
+                <div class="form-group">
+                    <label for="publication_date">Publication Date:</label>
+                    <input type="date" id="publication_date" name="publication_date" required>
+                </div>
+                <div class="form-group">
+                    <label for="isbn">ISBN:</label>
+                    <input type="text" id="isbn" name="isbn" required pattern="\d{10}|\d{13}" title="ISBN must be 10 or 13 digits">
+                </div>
+                <button type="submit" class="btn-primary">Add Book</button>
+            </form>
+        </section>
+
+        
+
+        <!-- Filter and Export Books Section -->
+        <section id="filter-and-export" class="card">
+            <h2>Filter and Export Books</h2>
+            <div class="filter-section">
+                <form action="/" method="GET">
+                    <h3>Filter Books</h3>
+                    <div class="form-group">
+                        <label for="filter-title">Title:</label>
+                        <input type="text" id="filter-title" name="title" value="{{ title or '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="filter-author">Author:</label>
+                        <input type="text" id="filter-author" name="author" value="{{ author or '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="filter-genre">Genre:</label>
+                        <input type="text" id="filter-genre" name="genre" value="{{ genre or '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="filter-date">Publication Date:</label>
+                        <input type="date" id="filter-date" name="publication_date" value="{{ publication_date or '' }}">
+                    </div>
+                    <button type="submit" class="btn-primary">Filter Books</button>
+                </form>
+            </div>
+
+            <!-- Book List Display -->
+        <section id="book-list" class="card">
+            <!-- <h2>Book List</h2> -->
+            {% if books %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Genre</th>
+                            <th>Publication Date</th>
+                            <th>ISBN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for book in books %}
+                            <tr>
+                                <td>{{ book.title }}</td>
+                                <td>{{ book.author }}</td>
+                                <td>{{ book.genre }}</td>
+                                <td>{{ book.publication_date }}</td>
+                                <td>{{ book.isbn }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% elif filter_applied %}
+                <p>No books found matching your criteria. Please try different search terms.</p>
+            {% endif %}
+        </section>
+
+
+            <div class="export-section">
+                <form action="/export" method="GET">
+                    <h3>Export Filtered Books</h3>
+                    <input type="hidden" name="title" value="{{ title or '' }}">
+                    <input type="hidden" name="author" value="{{ author or '' }}">
+                    <input type="hidden" name="genre" value="{{ genre or '' }}">
+                    <input type="hidden" name="publication_date" value="{{ publication_date or '' }}">
+                    <div class="form-group">
+                        <label for="format">Select Format:</label>
+                        <select id="format" name="format" required>
+                            <option value="csv">CSV</option>
+                            <option value="json">JSON</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-secondary">Export</button>
+                </form>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+{% endblock%}

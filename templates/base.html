@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="stylesheet" href="{{url_for('static', filename='styles.css')}}">
+     <title>Second Bind Challenge</title>
+    {% block head %}{% endblock %}
+</head>
+<body>
+    {% block body %}{% endblock %} 
+</body>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.querySelector("form"); // Select the form
+
+    form.addEventListener("submit", function (event) {
+      const title = document.getElementById("title").value.trim();
+      const author = document.getElementById("author").value.trim();
+      const genre = document.getElementById("genre").value.trim();
+      const publicationDate = document.getElementById("publication_date").value;
+      const isbn = document.getElementById("isbn").value.trim();
+
+      let isValid = true;
+      let errorMessage = "";
+
+      // Check if Title is not empty
+      if (title === "") {
+        isValid = false;
+        errorMessage += "Title is required.\n";
+      }
+
+      // Check if Author is not empty
+      if (author === "") {
+        isValid = false;
+        errorMessage += "Author is required.\n";
+      }
+
+      // Check if Genre is not empty
+      if (genre === "") {
+        isValid = false;
+        errorMessage += "Genre is required.\n";
+      }
+
+      // Check if Publication Date is in the past
+      const today = new Date().toISOString().split("T")[0];
+      if (publicationDate === "" || publicationDate > today) {
+        isValid = false;
+        errorMessage += "Please enter a valid publication date.\n";
+      }
+
+      // Check if ISBN is 10 or 13 digits
+      const isbnPattern = /^\d{10}(\d{3})?$/;
+      if (!isbnPattern.test(isbn)) {
+        isValid = false;
+        errorMessage += "ISBN must be 10 or 13 digits.\n";
+      }
+
+      // If the form is not valid, prevent submission and show alert
+      if (!isValid) {
+        event.preventDefault();
+        alert(errorMessage);
+      }
+    });
+  });
+</script>
+</html>
